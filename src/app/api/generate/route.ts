@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+const apiKey = process.env.OPENAI_API_KEY;
+if (!apiKey) {
+  throw new Error("Missing OpenAI API key");
+}
+
+const openai = new OpenAI({ apiKey });
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_ANON_KEY!,
@@ -28,7 +33,12 @@ Return nothing else.
   });
 
   // 3) JSON 파싱 & 유효성 검사
-  const data = JSON.parse(chat.choices[0].message.content);
+const content = chat.choices[0].message.content;
+if (!content) {
+  return NextResponse.json({ error: "Empty response from OpenAI" }, { status: 500 });
+}
+
+const data = JSON.parse(content);
   if (data.traits?.length < 3 || data.dialogue?.length < 5) {
     return NextResponse.json({ error: "Validation failed" }, { status: 400 });
   }

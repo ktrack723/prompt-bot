@@ -9,7 +9,7 @@ const supabase = createClient(
 );
 
 export async function POST(req: NextRequest) {
-  const { currentCount } = await req.json();    // 클라이언트에서 전달
+  await req.json();
   // 1) 프롬프트 작성
   const prompt = `
 You are a game design assistant that OUTPUTS ONLY JSON.
